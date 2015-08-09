@@ -9,6 +9,7 @@
 #import "SIAlertView.h"
 #import "UIWindow+SIUtils.h"
 #import <QuartzCore/QuartzCore.h>
+#import "SIAlertItem.h"
 
 NSString *const SIAlertViewWillShowNotification = @"SIAlertViewWillShowNotification";
 NSString *const SIAlertViewDidShowNotification = @"SIAlertViewDidShowNotification";
@@ -125,20 +126,6 @@ static SIAlertView *__si_alert_current_view;
 
 @end
 
-#pragma mark - SIAlertItem
-
-@interface SIAlertItem : NSObject
-
-@property (nonatomic, copy) NSString *title;
-@property (nonatomic, assign) SIAlertViewButtonType type;
-@property (nonatomic, copy) SIAlertViewHandler action;
-
-@end
-
-@implementation SIAlertItem
-
-@end
-
 #pragma mark - SIAlertViewController
 
 @interface SIAlertViewController : UIViewController
@@ -230,24 +217,27 @@ static SIAlertView *__si_alert_current_view;
 
 @implementation SIAlertView
 
-+ (void)initialize
-{
-    if (self != [SIAlertView class])
-        return;
-    
-    SIAlertView *appearance = [self appearance];
-    appearance.viewBackgroundColor = [UIColor whiteColor];
-    appearance.titleColor = [UIColor blackColor];
-    appearance.messageColor = [UIColor darkGrayColor];
-    appearance.titleFont = [UIFont boldSystemFontOfSize:20];
-    appearance.messageFont = [UIFont systemFontOfSize:16];
-    appearance.buttonFont = [UIFont systemFontOfSize:[UIFont buttonFontSize]];
-    appearance.buttonColor = [UIColor colorWithWhite:0.4 alpha:1];
-    appearance.cancelButtonColor = [UIColor colorWithWhite:0.3 alpha:1];
-    appearance.destructiveButtonColor = [UIColor whiteColor];
-    appearance.cornerRadius = 2;
-    appearance.shadowRadius = 8;
-}
+//+ (void)initialize
+//{
+//    if (self != [SIAlertView class])
+//        return;
+//    
+//    SIAlertView *appearance = [self appearance];
+//    appearance.viewBackgroundColor = [UIColor whiteColor];
+//    appearance.titleColor = [UIColor blackColor];
+//    appearance.messageColor = [UIColor darkGrayColor];
+//    appearance.titleFont = [UIFont boldSystemFontOfSize:20];
+//    appearance.messageFont = [UIFont systemFontOfSize:16];
+//    appearance.buttonFont = [UIFont systemFontOfSize:[UIFont buttonFontSize]];
+//    appearance.buttonColor = [UIColor colorWithWhite:0.4 alpha:1];
+//    appearance.cancelButtonColor = [UIColor colorWithWhite:0.3 alpha:1];
+//    appearance.destructiveButtonColor = [UIColor whiteColor];
+//    appearance.cancelButtonBacgroundColor = [UIColor redColor];
+//    appearance.buttonBacgroundColor = [UIColor greenColor];
+//    appearance.destructiveButtonBacgroundColor = [UIColor blueColor];
+//    appearance.cornerRadius = 2;
+//    appearance.shadowRadius = 8;
+//}
 
 - (id)init
 {
@@ -973,36 +963,27 @@ static SIAlertView *__si_alert_current_view;
 	button.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     button.titleLabel.font = self.buttonFont;
 	[button setTitle:item.title forState:UIControlStateNormal];
-	UIImage *normalImage = nil;
-	UIImage *highlightedImage = nil;
+
+
+    UIColor *color = nil;
+    UIColor *backgroundColor = nil;
 	switch (item.type) {
 		case SIAlertViewButtonTypeCancel:
-			normalImage = [UIImage imageNamed:@"SIAlertView.bundle/button-cancel"];
-			highlightedImage = [UIImage imageNamed:@"SIAlertView.bundle/button-cancel-d"];
-			[button setTitleColor:self.cancelButtonColor forState:UIControlStateNormal];
-            [button setTitleColor:[self.cancelButtonColor colorWithAlphaComponent:0.8] forState:UIControlStateHighlighted];
+            color = self.cancelButtonColor;
+            backgroundColor = self.cancelButtonBacgroundColor;
 			break;
 		case SIAlertViewButtonTypeDestructive:
-			normalImage = [UIImage imageNamed:@"SIAlertView.bundle/button-destructive"];
-			highlightedImage = [UIImage imageNamed:@"SIAlertView.bundle/button-destructive-d"];
-            [button setTitleColor:self.destructiveButtonColor forState:UIControlStateNormal];
-            [button setTitleColor:[self.destructiveButtonColor colorWithAlphaComponent:0.8] forState:UIControlStateHighlighted];
-			break;
+            color = self.destructiveButtonColor;
+            backgroundColor = self.destructiveButtonBacgroundColor;
+            break;
 		case SIAlertViewButtonTypeDefault:
 		default:
-			normalImage = [UIImage imageNamed:@"SIAlertView.bundle/button-default"];
-			highlightedImage = [UIImage imageNamed:@"SIAlertView.bundle/button-default-d"];
-			[button setTitleColor:self.buttonColor forState:UIControlStateNormal];
-            [button setTitleColor:[self.buttonColor colorWithAlphaComponent:0.8] forState:UIControlStateHighlighted];
+            color = self.buttonColor;
+            backgroundColor = self.buttonBacgroundColor;
 			break;
 	}
-	CGFloat hInset = floorf(normalImage.size.width / 2);
-	CGFloat vInset = floorf(normalImage.size.height / 2);
-	UIEdgeInsets insets = UIEdgeInsetsMake(vInset, hInset, vInset, hInset);
-	normalImage = [normalImage resizableImageWithCapInsets:insets];
-	highlightedImage = [highlightedImage resizableImageWithCapInsets:insets];
-	[button setBackgroundImage:normalImage forState:UIControlStateNormal];
-	[button setBackgroundImage:highlightedImage forState:UIControlStateHighlighted];
+    [self setColor:color forButton:button];
+    [self setBackgroundColor:backgroundColor forButton:button];
 	[button addTarget:self action:@selector(buttonAction:) forControlEvents:UIControlEventTouchUpInside];
     
     return button;
@@ -1108,6 +1089,30 @@ static SIAlertView *__si_alert_current_view;
     self.containerView.layer.shadowRadius = shadowRadius;
 }
 
+- (void)setDestructiveButtonBacgroundColor:(UIColor *)destructiveButtonBacgroundColor {
+    if (_destructiveButtonBacgroundColor == destructiveButtonBacgroundColor) {
+        return;
+    }
+    _destructiveButtonBacgroundColor = destructiveButtonBacgroundColor;
+    [self setBackgroundColor:destructiveButtonBacgroundColor toButtonsOfType:SIAlertViewButtonTypeDestructive];
+}
+
+- (void)setCancelButtonBacgroundColor:(UIColor *)cancelButtonBacgroundColor {
+    if (_cancelButtonBacgroundColor == cancelButtonBacgroundColor) {
+        return;
+    }
+    _cancelButtonBacgroundColor = cancelButtonBacgroundColor;
+    [self setBackgroundColor:cancelButtonBacgroundColor toButtonsOfType:SIAlertViewButtonTypeCancel];
+}
+
+- (void)setButtonBacgroundColor:(UIColor *)buttonBacgroundColor {
+    if (_buttonBacgroundColor == buttonBacgroundColor) {
+        return;
+    }
+    _buttonBacgroundColor = buttonBacgroundColor;
+    [self setBackgroundColor:buttonBacgroundColor toButtonsOfType:SIAlertViewButtonTypeDefault];
+}
+
 - (void)setButtonColor:(UIColor *)buttonColor
 {
     if (_buttonColor == buttonColor) {
@@ -1167,16 +1172,52 @@ static SIAlertView *__si_alert_current_view;
     }
 }
 
-
--(void)setColor:(UIColor *)color toButtonsOfType:(SIAlertViewButtonType)type {
+-(void)setBackgroundColor:(UIColor *)color toButtonsOfType:(SIAlertViewButtonType)type {
     for (NSUInteger i = 0; i < self.items.count; i++) {
         SIAlertItem *item = self.items[i];
         if(item.type == type) {
             UIButton *button = self.buttons[i];
-            [button setTitleColor:color forState:UIControlStateNormal];
-            [button setTitleColor:[color colorWithAlphaComponent:0.8] forState:UIControlStateHighlighted];
+            [self setBackgroundColor:color forButton:button];
         }
     }
+}
+
+- (void)setColor:(UIColor *)color toButtonsOfType:(SIAlertViewButtonType)type {
+    for (NSUInteger i = 0; i < self.items.count; i++) {
+        SIAlertItem *item = self.items[i];
+        if(item.type == type) {
+            UIButton *button = self.buttons[i];
+            [self setColor:color forButton:button];
+        }
+    }
+}
+
+
+#pragma mark - Colors
+
+- (void)setBackgroundColor:(UIColor *)color forButton:(UIButton *)button {
+    button.clipsToBounds = YES;
+    button.layer.cornerRadius = 4.f;
+    button.layer.borderWidth = 1.f;
+    button.layer.borderColor = color.CGColor;
+    [button setBackgroundImage:[self imageFromColor:[color colorWithAlphaComponent:.7f]] forState:UIControlStateNormal];
+    [button setBackgroundImage:[self imageFromColor:color] forState:UIControlStateHighlighted];
+}
+
+- (void)setColor:(UIColor *)color forButton:(UIButton *)button {
+    [button setTitleColor:color forState:UIControlStateNormal];
+    [button setTitleColor:[color colorWithAlphaComponent:0.8] forState:UIControlStateHighlighted];
+}
+
+- (UIImage *)imageFromColor:(UIColor *)color {
+    CGRect rect = CGRectMake(0, 0, 1, 1);
+    UIGraphicsBeginImageContext(rect.size);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSetFillColorWithColor(context, [color CGColor]);
+    CGContextFillRect(context, rect);
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return image;
 }
 
 # pragma mark -
