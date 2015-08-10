@@ -1,6 +1,15 @@
 SIAlertView
 =============
 
+## fork by kennygunie
+Replace button image by button color by adding:
+**Code:**
+```objc
+@property (nonatomic, strong) UIColor *buttonBacgroundColor NS_AVAILABLE_IOS(5_0) UI_APPEARANCE_SELECTOR;
+@property (nonatomic, strong) UIColor *cancelButtonBacgroundColor NS_AVAILABLE_IOS(5_0) UI_APPEARANCE_SELECTOR;
+@property (nonatomic, strong) UIColor *destructiveButtonBacgroundColor NS_AVAILABLE_IOS(5_0) UI_APPEARANCE_SELECTOR;
+```
+
 An UIAlertView replacement with block syntax and fancy transition styles. As seen in [Grid Diary](http://griddiaryapp.com/).
 
 [![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=Sumi-Interactive&url=https://github.com/Sumi-Interactive/SIAlertView&title=SIAlertView&tags=github&category=software)
