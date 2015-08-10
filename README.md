@@ -3,7 +3,7 @@ SIAlertView
 
 ## fork by kennygunie
 Replace button image by button color by adding:
-**Code:**
+
 ```objc
 @property (nonatomic, strong) UIColor *buttonBacgroundColor NS_AVAILABLE_IOS(5_0) UI_APPEARANCE_SELECTOR;
 @property (nonatomic, strong) UIColor *cancelButtonBacgroundColor NS_AVAILABLE_IOS(5_0) UI_APPEARANCE_SELECTOR;
