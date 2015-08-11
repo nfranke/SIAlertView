@@ -1198,8 +1198,8 @@ static SIAlertView *__si_alert_current_view;
 - (void)setBackgroundColor:(UIColor *)color forButton:(UIButton *)button {
     button.clipsToBounds = YES;
     button.layer.cornerRadius = 4.f;
-    [button setBackgroundImage:[self imageFromColor:[color colorWithAlphaComponent:.7f]] forState:UIControlStateNormal];
-    [button setBackgroundImage:[self imageFromColor:color] forState:UIControlStateHighlighted];
+    [button setBackgroundImage:[self imageFromColor:color] forState:UIControlStateNormal];
+    [button setBackgroundImage:[self imageFromColor:[color colorWithAlphaComponent:.7f]] forState:UIControlStateHighlighted];
 }
 
 - (void)setColor:(UIColor *)color forButton:(UIButton *)button {
