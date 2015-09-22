@@ -39,7 +39,6 @@
 		7E23C6A8173277EA00784CF1 /* Icon-72.png in Resources */ = {isa = PBXBuildFile; fileRef = 7E23C6A7173277EA00784CF1 /* Icon-72.png */; };
 		7E23C6AA173277EE00784CF1 /* Icon-72@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7E23C6A9173277EE00784CF1 /* Icon-72@2x.png */; };
 		7EEECA69182350B1001FEDF5 /* UIWindow+SIUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 7EEECA68182350B1001FEDF5 /* UIWindow+SIUtils.m */; };
-		FB85C7611B77D55B00496809 /* SIAlertItem.m in Sources */ = {isa = PBXBuildFile; fileRef = FB85C7601B77D55B00496809 /* SIAlertItem.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -82,8 +81,6 @@
 		7E23C6A9173277EE00784CF1 /* Icon-72@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-72@2x.png"; sourceTree = "<group>"; };
 		7EEECA67182350B1001FEDF5 /* UIWindow+SIUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIWindow+SIUtils.h"; sourceTree = "<group>"; };
 		7EEECA68182350B1001FEDF5 /* UIWindow+SIUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIWindow+SIUtils.m"; sourceTree = "<group>"; };
-		FB85C75F1B77D55B00496809 /* SIAlertItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SIAlertItem.h; sourceTree = "<group>"; };
-		FB85C7601B77D55B00496809 /* SIAlertItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SIAlertItem.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -183,8 +180,6 @@
 				7E23C69B17325EBD00784CF1 /* SIAlertView.m */,
 				7EEECA67182350B1001FEDF5 /* UIWindow+SIUtils.h */,
 				7EEECA68182350B1001FEDF5 /* UIWindow+SIUtils.m */,
-				FB85C75F1B77D55B00496809 /* SIAlertItem.h */,
-				FB85C7601B77D55B00496809 /* SIAlertItem.m */,
 			);
 			name = SIAlertView;
 			path = ../SIAlertView;
@@ -309,7 +304,6 @@
 				7E23C67F17325EAA00784CF1 /* main.m in Sources */,
 				7E23C68317325EAA00784CF1 /* AppDelegate.m in Sources */,
 				7E23C69217325EAB00784CF1 /* ViewController.m in Sources */,
-				FB85C7611B77D55B00496809 /* SIAlertItem.m in Sources */,
 				7E23C69D17325EBD00784CF1 /* SIAlertView.m in Sources */,
 				7EEECA69182350B1001FEDF5 /* UIWindow+SIUtils.m in Sources */,
 			);
