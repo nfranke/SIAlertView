@@ -42,9 +42,9 @@ typedef void(^SIAlertViewHandler)(SIAlertView *alertView);
 
 @interface SIAlertView : UIView
 
+@property (nonatomic,readonly) NSString *textFieldText;
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, copy) NSString *message;
-@property (nonatomic, strong) NSMutableArray *textFields;
 @property (nonatomic, strong) UIView *footerView;
 @property (nonatomic, assign) SIAlertViewTransitionStyle transitionStyle; // default is SIAlertViewTransitionStyleSlideFromBottom
 @property (nonatomic, assign) SIAlertViewBackgroundStyle backgroundStyle; // default is SIAlertViewBackgroundStyleGradient
@@ -78,10 +78,12 @@ typedef void(^SIAlertViewHandler)(SIAlertView *alertView);
 //- (void)setDefaultButtonImage:(UIImage *)defaultButtonImage forState:(UIControlState)state NS_AVAILABLE_IOS(5_0) UI_APPEARANCE_SELECTOR;
 //- (void)setCancelButtonImage:(UIImage *)cancelButtonImage forState:(UIControlState)state NS_AVAILABLE_IOS(5_0) UI_APPEARANCE_SELECTOR;
 //- (void)setDestructiveButtonImage:(UIImage *)destructiveButtonImage forState:(UIControlState)state NS_AVAILABLE_IOS(5_0) UI_APPEARANCE_SELECTOR;
-
++ (SIAlertView *)currentAlertView;
 - (id)initWithTitle:(NSString *)title andMessage:(NSString *)message;
 - (void)addButtonWithTitle:(NSString *)title type:(SIAlertViewButtonType)type handler:(SIAlertViewHandler)handler;
--(void)addTextFieldWithPlaceHolder:(NSString *)placeholder andText:(NSString *)text secured:(BOOL)secured;
+- (void)setupTextFieldWithPlaceHolder:(NSString *)placeholder
+                              andText:(NSString *)text
+                              secured:(BOOL)secured;
 
 - (void)show;
 - (void)dismissAnimated:(BOOL)animated;
