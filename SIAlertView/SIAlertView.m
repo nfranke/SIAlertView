@@ -30,7 +30,7 @@ NSString *const SIAlertViewDidDismissNotification = @"SIAlertViewDidDismissNotif
 const UIWindowLevel UIWindowLevelSIAlert = 1996.0;  // don't overlap system's alert
 const UIWindowLevel UIWindowLevelSIAlertBackground = 1985.0; // below the alert window
 
-@class SIAlertBackgroundWindow;
+@class SIAlertBackgroundWindow, SITextItem;
 
 static NSMutableArray *__si_alert_queue;
 static BOOL __si_alert_animating;
@@ -39,7 +39,10 @@ static SIAlertView *__si_alert_current_view;
 
 @interface SIAlertView () <UITextFieldDelegate>
 @property (nonatomic, strong) NSMutableArray *items;
-@property (nonatomic, strong) NSMutableArray *textFieldsItems;
+
+@property (nonatomic, strong) UITextField *textField;
+@property (nonatomic, strong) SITextItem *textFieldItem;
+
 @property (nonatomic, weak) UIWindow *oldKeyWindow;
 @property (nonatomic, strong) UIWindow *alertWindow;
 #ifdef __IPHONE_7_0
@@ -144,10 +147,10 @@ static SIAlertView *__si_alert_current_view;
 #pragma mark - SITextItem
 @interface SITextItem : NSObject
 
-@property (nonatomic, copy) NSString *placeholder;
-@property (nonatomic, copy) NSString *text;
-@property (nonatomic, assign)BOOL secured;
-
+@property (nonatomic) NSString *placeholder;
+@property (nonatomic) NSString *text;
+@property (nonatomic) BOOL secured;
+@property (nonatomic, copy) void (^textFieldDidEndEditingBlock)(NSString *text);
 
 @end
 
@@ -194,14 +197,14 @@ static SIAlertView *__si_alert_current_view;
 }
 #endif
 
-- (NSUInteger)supportedInterfaceOrientations
-{
-    UIViewController *viewController = [self.alertView.oldKeyWindow currentViewController];
-    if (viewController) {
-        return [viewController supportedInterfaceOrientations];
-    }
-    return UIInterfaceOrientationMaskAll;
-}
+//- (NSUInteger)supportedInterfaceOrientations
+//{
+//    UIViewController *viewController = [self.alertView.oldKeyWindow currentViewController];
+//    if (viewController) {
+//        return [viewController supportedInterfaceOrientations];
+//    }
+//    return UIInterfaceOrientationMaskAll;
+//}
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
 {
@@ -279,7 +282,7 @@ static SIAlertView *__si_alert_current_view;
         _message = message;
         _enabledParallaxEffect = YES;
         self.items = [[NSMutableArray alloc] init];
-        self.textFieldsItems = [[NSMutableArray alloc] init];
+        //self.textFieldsItems = [[NSMutableArray alloc] init];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyBoardDidShow:) name:UIKeyboardWillShowNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyBoardDidHide:) name:UIKeyboardWillHideNotification object:nil];
     }
@@ -370,6 +373,10 @@ static SIAlertView *__si_alert_current_view;
 
 #pragma mark - Public
 
+- (NSString *)textFieldText {
+    return self.textField.text;
+}
+
 - (void)addButtonWithTitle:(NSString *)title type:(SIAlertViewButtonType)type handler:(SIAlertViewHandler)handler
 {
     SIAlertItem *item = [[SIAlertItem alloc] init];
@@ -380,14 +387,15 @@ static SIAlertView *__si_alert_current_view;
 }
 
 
--(void)addTextFieldWithPlaceHolder:(NSString *)placeholder andText:(NSString *)text secured:(BOOL)secured
-{
-    SITextItem *item = [[SITextItem alloc] init];
-    item.placeholder = placeholder;
-    item.text = text;
-    item.secured = secured;
-    [self.textFieldsItems addObject:item];
 
+-(void)setupTextFieldWithPlaceHolder:(NSString *)placeholder
+                             andText:(NSString *)text
+                             secured:(BOOL)secured
+{
+    self.textFieldItem = [SITextItem new];
+    self.textFieldItem.placeholder = placeholder;
+    self.textFieldItem.text = text;
+    self.textFieldItem.secured = secured;
 }
 
 
@@ -770,6 +778,7 @@ static SIAlertView *__si_alert_current_view;
         self.titleLabel.frame = CGRectMake(CONTENT_PADDING_LEFT, y, self.containerView.bounds.size.width - CONTENT_PADDING_LEFT * 2, height);
         y += height;
     }
+    
     if (self.messageLabel) {
         if (y > CONTENT_PADDING_TOP) {
             y += GAP;
@@ -780,17 +789,15 @@ static SIAlertView *__si_alert_current_view;
         y += height;
     }
 
-
-    if(self.textFields.count > 0) {
-        if (y > CONTENT_PADDING_TOP) {
-            y += GAP;
-        }
-        for (NSUInteger i = 0; i < self.textFields.count; i++) {
-            UITextField * textField = self.textFields[i];
-            [textField setFrame:CGRectMake(CONTENT_PADDING_LEFT, y, (CONTAINER_WIDTH-(CONTENT_PADDING_LEFT*2)), TEXTFIELD_HEIGHT)];
-            y += (TEXTFIELD_HEIGHT+GAP);
-        }
-
+    
+    if (y > CONTENT_PADDING_TOP) {
+        y += GAP;
+    }
+    
+    if (self.textFieldItem) {
+        UITextField * textField = self.textField;
+        [textField setFrame:CGRectMake(CONTENT_PADDING_LEFT, y, (CONTAINER_WIDTH-(CONTENT_PADDING_LEFT*2)), TEXTFIELD_HEIGHT)];
+        y += (TEXTFIELD_HEIGHT+GAP);
     }
 
     if (self.items.count > 0) {
@@ -839,17 +846,16 @@ static SIAlertView *__si_alert_current_view;
         }
         height += [self heightForMessageLabel];
     }
-
-    if(self.textFields.count > 0) {
-        if (height > CONTENT_PADDING_TOP) {
-            height += GAP;
-        }
-        for (NSUInteger i = 0; i < self.textFields.count; i++) {
-
-            height += (TEXTFIELD_HEIGHT+GAP);
-        }
-
+    
+    if (height > CONTENT_PADDING_TOP) {
+        height += GAP;
     }
+
+    if (self.textFieldItem) {
+        height += (TEXTFIELD_HEIGHT+GAP);
+    }
+    
+
 
     if (self.items.count > 0) {
         if (height > CONTENT_PADDING_TOP) {
@@ -1026,31 +1032,35 @@ static SIAlertView *__si_alert_current_view;
 
 - (void)setupTextFields
 {
-    self.textFields = [[NSMutableArray alloc] initWithCapacity:self.textFieldsItems.count];
-    for (NSUInteger i = 0; i < self.textFieldsItems.count; i++) {
-        UITextField *textField = [self textFieldForItemIndex:i];
-        [self.textFields addObject:textField];
-        [self.containerView addSubview:textField];
+//    self.textFields = [[NSMutableArray alloc] initWithCapacity:self.textFieldsItems.count];
+//    for (NSUInteger i = 0; i < self.textFieldsItems.count; i++) {
+//        UITextField *textField = [self textFieldForItemIndex:i];
+//        [self.textFields addObject:textField];
+//        [self.containerView addSubview:textField];
+//    }
+    
+    if (!self.textFieldItem) {
+        return;
     }
-}
-
-- (UITextField *)textFieldForItemIndex:(NSUInteger)index
-{   SITextItem *item = self.textFieldsItems[index];
+    
+    
     UITextField * textField = [[UITextField  alloc] init];
     textField.backgroundColor = [UIColor whiteColor];
-    textField.placeholder = item.placeholder;
+    textField.placeholder = self.textFieldItem.placeholder;
     textField.delegate = self;
-    textField.text = item.text;
-    textField.secureTextEntry = item.secured;
+    textField.text = self.textFieldItem.text;
+    textField.secureTextEntry = self.textFieldItem.secured;
     textField.borderStyle=UITextBorderStyleRoundedRect;
     textField.autocorrectionType=UITextAutocorrectionTypeNo;
     textField.autocapitalizationType=UITextAutocapitalizationTypeNone;
     textField.keyboardType=UIKeyboardTypeEmailAddress;
     textField.returnKeyType=UIReturnKeyDone;
     textField.clearButtonMode=UITextFieldViewModeWhileEditing;
+    [self.containerView addSubview:textField];
+    self.textField = textField;
     
-    return textField;
 }
+
 
 - (void)setupButtons
 {
@@ -1374,11 +1384,11 @@ static SIAlertView *__si_alert_current_view;
 
 
 #pragma mark UITextFieldDelegate
--(void)textFieldDidBeginEditing:(UITextField *)textField
-{
-    
+- (void)textFieldDidEndEditing:(UITextField *)textField {
+    if (self.textFieldItem.textFieldDidEndEditingBlock) {
+        self.textFieldItem.textFieldDidEndEditingBlock(textField.text);
+    }
 }
-
 -(BOOL)textFieldShouldReturn:(UITextField *)textField
 {
     [textField resignFirstResponder];
