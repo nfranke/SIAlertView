@@ -250,25 +250,25 @@ static SIAlertView *__si_alert_current_view;
 #pragma mark - SIAlert
 
 @implementation SIAlertView
-+ (void)initialize
-{
-    if (self != [SIAlertView class])
-        return;
-
-    SIAlertView *appearance = [self appearance];
-    appearance.viewBackgroundColor = [UIColor whiteColor];
-    appearance.titleColor = [UIColor blackColor];
-    appearance.messageColor = [UIColor darkGrayColor];
-    appearance.titleFont = [UIFont boldSystemFontOfSize:20];
-    appearance.messageFont = [UIFont systemFontOfSize:16];
-    appearance.buttonFont = [UIFont systemFontOfSize:[UIFont buttonFontSize]];
-    appearance.buttonColor = [UIColor colorWithWhite:0.4 alpha:1];
-    appearance.cancelButtonColor = [UIColor colorWithWhite:0.3 alpha:1];
-    appearance.destructiveButtonColor = [UIColor whiteColor];
-    appearance.cornerRadius = 2;
-    appearance.shadowRadius = 8;
-    appearance.maximumNumberOfLines = 5;
-}
+//+ (void)initialize
+//{
+//    if (self != [SIAlertView class])
+//        return;
+//
+//    SIAlertView *appearance = [self appearance];
+//    appearance.viewBackgroundColor = [UIColor whiteColor];
+//    appearance.titleColor = [UIColor blackColor];
+//    appearance.messageColor = [UIColor darkGrayColor];
+//    appearance.titleFont = [UIFont boldSystemFontOfSize:20];
+//    appearance.messageFont = [UIFont systemFontOfSize:16];
+//    appearance.buttonFont = [UIFont systemFontOfSize:[UIFont buttonFontSize]];
+//    appearance.buttonColor = [UIColor colorWithWhite:0.4 alpha:1];
+//    appearance.cancelButtonColor = [UIColor colorWithWhite:0.3 alpha:1];
+//    appearance.destructiveButtonColor = [UIColor whiteColor];
+//    appearance.cornerRadius = 2;
+//    appearance.shadowRadius = 8;
+//    appearance.maximumNumberOfLines = 5;
+//}
 
 - (id)init
 {
@@ -463,10 +463,11 @@ static SIAlertView *__si_alert_current_view;
         self.alertWindow = window;
     }
     [self.alertWindow makeKeyAndVisible];
-    if (viewController.alertView.textFieldItem) {
+    [self validateLayout];
+    
+    if ([viewController.alertView superview]) {
         [viewController.alertView.textField becomeFirstResponder];
     }
-    [self validateLayout];
 
     [self transitionInCompletion:^{
         if (self.didShowHandler) {
@@ -1397,19 +1398,9 @@ static SIAlertView *__si_alert_current_view;
 
 
 #pragma mark UITextFieldDelegate
--(void)textFieldDidBeginEditing:(UITextField *)textField
-{
-    
-}
 
 -(BOOL)textFieldShouldBeginEditing:(UITextField *)textField{
     return  YES;
-}
-
--(BOOL)textFieldShouldReturn:(UITextField *)textField
-{
-    [textField resignFirstResponder];
-    return YES;
 }
 
 -(void)textFieldDidEndEditing:(UITextField *)textField
