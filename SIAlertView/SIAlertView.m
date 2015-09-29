@@ -473,7 +473,7 @@ static SIAlertView *__si_alert_current_view;
         }
     }];
     if (self.textFieldItem) {
-        [self.textField becomeFirstResponder]
+        [self.textField becomeFirstResponder];
     }
 }
 
