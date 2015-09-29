@@ -472,6 +472,9 @@ static SIAlertView *__si_alert_current_view;
             [self dismissAnimated:YES cleanup:NO]; // dismiss to show next alert view
         }
     }];
+    if (self.textFieldItem) {
+        [self.textField becomeFirstResponder]
+    }
 }
 
 - (void)dismissAnimated:(BOOL)animated
