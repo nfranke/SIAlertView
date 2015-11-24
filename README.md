@@ -1,6 +1,10 @@
 SIAlertView
 =============
 
+## fork by nfranke
+
+Forked to correct some bug fixes. The original project appears to be abandonded.
+
 ## fork by kennygunie
 Replace button image by button color by adding:
 
