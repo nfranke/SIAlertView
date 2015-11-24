@@ -772,7 +772,7 @@ static SIAlertView *__si_alert_current_view;
 
 - (void)validateLayout
 {
-    if (!self.isLayoutDirty) {
+    if (!self.isLayoutDirty || !self.isVisible) {
         return;
     }
     self.layoutDirty = NO;
